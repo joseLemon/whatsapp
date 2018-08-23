@@ -21,6 +21,8 @@
                 <div class="col-12">
                     <input type="text" class="input-group-text" name="c_holder_name" id="c_holder_name"
                            placeholder="Nombre">
+                    <input type="email" class="input-group-text" name="c_holder_email" id="c_holder_email"
+                           placeholder="Email">
                 </div>
                 <div class="col-12">
                     <input type="text" class="input-group-text" name="c_number" id="c_number"
@@ -43,7 +45,16 @@
 @endsection
 @section('scripts')
     <script type="text/javascript" src="https://cdn.conekta.io/js/latest/conekta.js"></script>
+    <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
     <script>
+        let cleave_exp_year = new Cleave('#c_exp_year', {
+                date: true,
+                datePattern: ['m', 'Y']
+            }),
+            cleave_card_number = new Cleave('#c_number', {
+                creditCard: true,
+            });
+
         Conekta.setPublicKey("key_PL3QPzUWjrpsHAhMNAPjtZw");
         Conekta.setLanguage("es");
 
@@ -100,35 +111,6 @@
                 }
             };
             generateToken();
-        });
-
-        $('#c_exp_year').bind('keydown keyup', function (e) {
-            let inp = $(this),
-                val = inp.val();
-            if (
-                (
-                    ((e.which >= 48 && e.which <= 57)
-                        || (e.which >= 96 && e.which <= 105))
-                    && val.length !== 7)
-                || (e.which >= 37 && e.which <= 40)
-                || e.which === 8 || e.which === 46
-                || e.which === 9
-            ) {
-                let new_val = '',
-                    count = 1;
-
-                for (let i in val) {
-                    if (!isNaN(val[i]))
-                        new_val += val[i];
-                    if (count === 2)
-                        if (e.which !== 8 && e.which !== 46)
-                            new_val += '/';
-                    count++;
-                }
-                inp.val(new_val);
-            } else {
-                e.preventDefault();
-            }
         });
 
         /* EXAMPLE OF TOKEN PARAMS

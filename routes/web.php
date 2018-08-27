@@ -16,3 +16,7 @@ Route::get('/', function () {
 });
 
 Route::get('/conektaTest', 'ConektaController@test')->name('test');
+
+Route::name('conekta.')->group(function () {
+    Route::post('/createOrder', 'ConektaController@createOrder')->name('create');
+});

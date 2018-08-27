@@ -6,7 +6,9 @@
  */
 
 require('./bootstrap');
+require('cleave.js/src/addons/phone-type-formatter.i18n.js');
 require('cleave.js');
+require('cleave.js/dist/addons/cleave-phone.i18n.js');
 
 /*window.Vue = require('vue');*/
 

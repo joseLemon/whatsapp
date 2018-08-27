@@ -21,8 +21,14 @@
                 <div class="col-12">
                     <input type="text" class="input-group-text" name="c_holder_name" id="c_holder_name"
                            placeholder="Nombre">
+                </div>
+                <div class="col-sm-6">
                     <input type="email" class="input-group-text" name="c_holder_email" id="c_holder_email"
                            placeholder="Email">
+                </div>
+                <div class="col-sm-6">
+                    <input type="tel" class="input-group-text" name="c_holder_phone" id="c_holder_phone"
+                           placeholder="Teléfono">
                 </div>
                 <div class="col-12">
                     <input type="text" class="input-group-text" name="c_number" id="c_number"
@@ -53,13 +59,33 @@
             }),
             cleave_card_number = new Cleave('#c_number', {
                 creditCard: true,
+            }),
+            cleave_phone_number = new Cleave('#c_holder_phone', {
+                phone: true,
+                phoneRegionCode: 'MX'
             });
 
         Conekta.setPublicKey("key_PL3QPzUWjrpsHAhMNAPjtZw");
         Conekta.setLanguage("es");
 
         let successResponseHandler = (token) => {
-                console.log(token)
+                $.ajax({
+                    url: '{{ route('conekta.create') }}',
+                    type: 'POST',
+                    data: {
+                        card: tokenParams,
+                        token: token,
+                        payment_method: 1
+                    },
+                }).done(function (res) {
+                    if (res.success === true) {
+
+                    } else {
+
+                    }
+                }).fail(function () {
+
+                });
             },
             errorResponseHandler = (error) => {
                 alert(error.message_to_purchaser);
@@ -100,14 +126,28 @@
 
         $('form').submit(function (e) {
             e.preventDefault();
-            let exp = $('#c_exp_year').val().split('/');
+            let exp = $('#c_exp_year').val().split('/'),
+                name = $('#c_holder_name'),
+                email = $('#c_holder_email'),
+                phone = $('#c_holder_phone'),
+                errors = '';
+
+            if (name.val() === '' || email.val() === '' || phone.val() === '')
+                errors += 'Completa la información del titular de la tarjeta antes de continuar.';
+
+            if (errors !== '') {
+                alert(errors);
+                return;
+            }
             tokenParams = {
                 "card": {
-                    "number": $('#c_number').val(), // Datos mínimos requridos
-                    "name": $('#c_holder_name').val(), // Datos mínimos requridos
-                    "exp_year": exp[1], // Datos mínimos requridos
-                    "exp_month": exp[0], // Datos mínimos requridos
-                    "cvc": $('#c_cvc').val(), // Datos mínimos requridos
+                    "number": $('#c_number').val(),
+                    "name": name.val(),
+                    "email": email.val(),
+                    "phone": phone.val(),
+                    "exp_year": exp[1],
+                    "exp_month": exp[0],
+                    "cvc": $('#c_cvc').val(),
                 }
             };
             generateToken();
